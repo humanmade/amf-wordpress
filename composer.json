@@ -1,0 +1,16 @@
+{
+	"name": "humanmade/amf-wpmultisite",
+	"description": "Share a WordPress media library between blogs in a multisite.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Human Made",
+			"homepage": "https://humanmade.com/"
+		}
+	],
+	"require": {
+		"php": ">=7.2",
+		"humanmade/asset-manager-framework": "~0.6"
+	}
+}
