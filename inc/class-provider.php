@@ -3,8 +3,14 @@
 namespace AMFWPMultisite;
 
 use WP_REST_Request;
-use AssetManagerFramework\Image;
-use AssetManagerFramework\MediaList;
+use AssetManagerFramework\{
+	Audio,
+	Document,
+	Image,
+	Media,
+	MediaList,
+	Video
+};
 use AssetManagerFramework\Provider as BaseProvider;
 use stdClass;
 
@@ -12,7 +18,6 @@ class Provider extends BaseProvider {
     /**
      * Base URL for the Wordpress API.
      */
-    const BASE_URL = 'https://hm-playbook.altis.dev/wp-json/wp/v2';
 
     /**
      * Parse input query args into an Unsplash query.
@@ -22,8 +27,9 @@ class Provider extends BaseProvider {
      */
     protected function parse_args( array $input ) : array {
         $query = [
-            'page' => 1,
+            'page'     => 1,
             'per_page' => 10,
+            '_embed'   => 1,
         ];
 
         if ( isset( $input['posts_per_page'] ) ) {
@@ -41,7 +47,7 @@ class Provider extends BaseProvider {
             }
         }
         if ( isset( $input['s'] ) ) {
-            $query['query'] = $input['s'];
+            $query['search'] = $input['s'];
 
             // Override to sort by relevance. (Requires hack in search_images)
             $query['order_by'] = 'relevant';
@@ -71,9 +77,9 @@ class Provider extends BaseProvider {
      * @return MediaList Found images.
      */
     protected function request_images( array $args ) : MediaList {
-        $query = $this->parse_args( $args );
+        $args = $this->parse_args( $args );
 
-        $response = $this->fetch( '/media', $query );
+        $response = $this->fetch( $args );
         $items = $this->prepare_images( $response['data'] );
 
         return new MediaList( ...$items );
@@ -86,13 +92,12 @@ class Provider extends BaseProvider {
      * @return MediaList Found images.
      */
     protected function search_images( array $args ) : MediaList {
-        $query = $this->parse_args( $args );
+        $args = $this->parse_args( $args );
 
-        $response = $this->fetch( '/media', $query );
+        $response = $this->fetch( $args );
         $items = [];
-        $i = $query['page'] * $query['per_page'];
 
-        foreach ( $response['data']->results as $image ) {
+        foreach ( $response['data'] as $image ) {
             $item = $this->prepare_image_for_response( $image );
             $items[] = $item;
         }
@@ -136,40 +141,71 @@ class Provider extends BaseProvider {
      * @param stdClass $image Raw data from the Wordpress API
      * @return Image Formatted image for use in AMF.
      */
-    protected function prepare_image_for_response( object $image ) : Image {
-        $item = new Image(
-            $image->id,
-            $image->mime_type
-        );
+    protected function prepare_image_for_response( object $media ) : Media {
+
+        $media_type = explode( '/', $media->mime_type );
+
+        switch ( $media_type[0] ) {
+            case 'image':
+            case 'icon':
+                $item = new Image( $media->id, $media->mime_type );
+                $item->set_width( $media->media_details->width );
+                $item->set_height( $media->media_details->height );
+                $item->set_alt( $media->alt_text ?? '' );
+                // Generate sizes.
+                $sizes = $this->get_image_sizes( $media );
+                $item->set_sizes( $sizes );
+                break;
+
+            case 'video':
+                $item = new Video( $media->id, $media->mime_type );
+                if ( ! empty( $media->_embedded->{'wp:featuredmedia'} ) && isset( $media->_embedded->{'wp:featuredmedia'} ) ) {
+                    $thumb = $media->_embedded->{'wp:featuredmedia'}[0]->source_url;
+                    $item->set_image( $media->_embedded->{'wp:featuredmedia'}[0]->source_url );
+                }
+                break;
+
+            case 'audio':
+                $item = new Audio( $media->id, $media->mime_type );
+                if ( ! empty( $media->_embedded->{'wp:featuredmedia'} ) && isset( $media->_embedded->{'wp:featuredmedia'} ) ) {
+                    $thumb = $media->_embedded->{'wp:featuredmedia'}[0]->source_url;
+                    $item->set_image( $media->_embedded->{'wp:featuredmedia'}[0]->source_url );
+                }
+                break;
+
+            case 'application':
+                $item = new Document( $media->id, $media->mime_type );
+                break;
+
+            default:
+                $item = new Media( $media->id, $media->mime_type );
+
+                break;
+        }
 
         // Map data directly.
-        $item->set_url( $image->source_url );
-        $item->set_filename( $image->guid->rendered );
-        $item->set_link( $image->link );
+        $item->set_url( $media->source_url );
+        $item->set_filename( $media->source_url );
+        $item->set_name( $media->id );
+        $item->set_link( $media->link );
         $item->set_title(
-            $image->title->rendered ?? $image->caption->rendered ?? ''
+            $media->title->rendered ?? $media->caption->rendered ?? ''
         );
-        $item->set_width( $image->media_details->width );
-        $item->set_height( $image->media_details->height );
-        $item->set_alt( $image->alt_text ?? '' );
+
 
         // Generate attribution.
-        $item->author = $image->author;
-        $item->set_caption( $image->caption->rendered );
-        $item->set_date( strtotime( $image->date ) );
-        $item->set_modified(  strtotime( $image->modified ) );
-        $item->set_file_size( $this->getfilesize( $image->source_url ) );
-        // Generate sizes.
-        $sizes = $this->get_image_sizes( $image );
-        $item->set_sizes( $sizes );
+        $item->author = $media->author;
+        $item->set_caption( $media->caption->rendered );
+        $item->set_date( strtotime( $media->date ) );
+        $item->set_modified(  strtotime( $media->modified ) );
+        $item->set_file_size( $this->getfilesize( $media->source_url ) );
+
 
         // Add additional metadata for later.
-        $item->add_amf_meta( 'media_id', $image->id );
+        $item->add_amf_meta( 'media_id', $media->id );
 
         return $item;
     }
-
-
 
     /**
      * Fetch an API endpoint.
@@ -179,30 +215,17 @@ class Provider extends BaseProvider {
      * @param array $options Other options to pass to WP HTTP.
      * @return array
      */
-    protected static function fetch( string $path, array $args = [], array $options = [] ) {
-        $url = static::BASE_URL . $path;
-        $url = add_query_arg( urlencode_deep( $args ), $url );
+    protected static function fetch( array $args = [] ) {
+        $endpoint = get_media_domain();
+        $url = add_query_arg( urlencode_deep( $args ), $endpoint );
 
-        // $options = array_merge( $defaults, $options );
+        $request = wp_remote_get( $url );
 
-        $request = new WP_REST_Request( 'GET', '/wp/v2/media' );
-        $request->set_query_params( [ 'per_page' => 30 ] );
-
-        // Switch to media blog to make internal request.
-        switch_to_blog( 1 ); // @TODO Get blog ID from settings.
-        $response = rest_do_request( $request );
-        $server = rest_get_server();
-        $data = $server->response_to_data( $response, false );
-        restore_current_blog();
-
-        $json = wp_json_encode( $data, true );
-
-
-        if ( is_wp_error( $response ) ) {
+        if ( is_wp_error( $request ) ) {
             return null;
         }
+        $data = json_decode( wp_remote_retrieve_body( $request ) );
 
-        $data = json_decode( $json );
         if ( json_last_error() !== JSON_ERROR_NONE ) {
             return null;
         }
