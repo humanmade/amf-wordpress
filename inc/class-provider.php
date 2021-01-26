@@ -2,7 +2,6 @@
 
 namespace AMFWPMultisite;
 
-use WP_REST_Request;
 use AssetManagerFramework\{
 	Audio,
 	Document,
@@ -16,11 +15,7 @@ use stdClass;
 
 class Provider extends BaseProvider {
     /**
-     * Base URL for the Wordpress API.
-     */
-
-    /**
-     * Parse input query args into an Unsplash query.
+     * Parse input query args into REST query.
      *
      * @param array $input
      * @return array
@@ -28,7 +23,7 @@ class Provider extends BaseProvider {
     protected function parse_args( array $input ) : array {
         $query = [
             'page'     => 1,
-            'per_page' => 10,
+            'per_page' => 30,
             '_embed'   => 1,
         ];
 
@@ -49,7 +44,7 @@ class Provider extends BaseProvider {
         if ( isset( $input['s'] ) ) {
             $query['search'] = $input['s'];
 
-            // Override to sort by relevance. (Requires hack in search_images)
+            // Override to sort by relevance.
             $query['order_by'] = 'relevant';
         }
 
@@ -57,65 +52,38 @@ class Provider extends BaseProvider {
     }
 
     /**
-     * Retrieve the images for a query.
+     * Retrieve the it for a query.
      *
      * @param array $args Query args from the media library
-     * @return MediaList Found images.
+     *
+     * @return MediaList Found items.
      */
     protected function request( array $args ) : MediaList {
-        if ( ! empty( $args['s'] ) ) {
-            return $this->search_images( $args );
-        } else {
-            return $this->request_images( $args );
-        }
-    }
-
-    /**
-     * Retrieve the images for a list query.
-     *
-     * @param array $args Query args from the media library
-     * @return MediaList Found images.
-     */
-    protected function request_images( array $args ) : MediaList {
         $args = $this->parse_args( $args );
 
-        $response = $this->fetch( $args );
-        $items = $this->prepare_images( $response['data'] );
+        $endpoint = get_media_domain();
+
+        $response = self::remote_request( $endpoint, $args );
+        $response = json_decode( $response );
+
+        $items = $this->prepare_items( $response );
+
 
         return new MediaList( ...$items );
     }
 
     /**
-     * Retrieve the images for a search query.
+     * Prepare a list of media for the response.
      *
-     * @param array $args Query args from the media library
-     * @return MediaList Found images.
-     */
-    protected function search_images( array $args ) : MediaList {
-        $args = $this->parse_args( $args );
-
-        $response = $this->fetch( $args );
-        $items = [];
-
-        foreach ( $response['data'] as $image ) {
-            $item = $this->prepare_image_for_response( $image );
-            $items[] = $item;
-        }
-
-        return new MediaList( ...$items );
-    }
-
-    /**
-     * Prepare a list of images for the response.
+     * @param array $media Array of image objects
      *
-     * @param array $images
      * @return array
      */
-    protected function prepare_images( array $images ) : array {
+    protected function prepare_items( array $media ) : array {
         $items = [];
 
-        foreach ( $images as $image ) {
-            $item = $this->prepare_image_for_response( $image );
+        foreach ( $media as $item ) {
+            $item = $this->prepare_item_for_response( $item );
             $items[] = $item;
         }
 
@@ -123,9 +91,10 @@ class Provider extends BaseProvider {
     }
 
     /**
-     * Get the remote file's size without downloading full image.
+     * Get the remote file's size without downloading full file.
      *
      * @param  string $path
+     *
      * @return int
      */
     protected function getfilesize( string $path ) : int {
@@ -136,13 +105,14 @@ class Provider extends BaseProvider {
     }
 
     /**
-     * Prepare an image's data for the response.
+     * Prepare a media item's data for the response.
      *
-     * @param stdClass $image Raw data from the Wordpress API
-     * @return Image Formatted image for use in AMF.
+     * @param stdClass $media Raw data from the Wordpress API
+     *
+     * @return Image Formatted media item for use in AMF.
      */
-    protected function prepare_image_for_response( object $media ) : Media {
-
+    protected function prepare_item_for_response( object $media ) : Media {
+        // Use mime_type instead of media_type as WP sets non-images to just 'file'.
         $media_type = explode( '/', $media->mime_type );
 
         switch ( $media_type[0] ) {
@@ -152,6 +122,7 @@ class Provider extends BaseProvider {
                 $item->set_width( $media->media_details->width );
                 $item->set_height( $media->media_details->height );
                 $item->set_alt( $media->alt_text ?? '' );
+
                 // Generate sizes.
                 $sizes = $this->get_image_sizes( $media );
                 $item->set_sizes( $sizes );
@@ -160,7 +131,6 @@ class Provider extends BaseProvider {
             case 'video':
                 $item = new Video( $media->id, $media->mime_type );
                 if ( ! empty( $media->_embedded->{'wp:featuredmedia'} ) && isset( $media->_embedded->{'wp:featuredmedia'} ) ) {
-                    $thumb = $media->_embedded->{'wp:featuredmedia'}[0]->source_url;
                     $item->set_image( $media->_embedded->{'wp:featuredmedia'}[0]->source_url );
                 }
                 break;
@@ -168,7 +138,6 @@ class Provider extends BaseProvider {
             case 'audio':
                 $item = new Audio( $media->id, $media->mime_type );
                 if ( ! empty( $media->_embedded->{'wp:featuredmedia'} ) && isset( $media->_embedded->{'wp:featuredmedia'} ) ) {
-                    $thumb = $media->_embedded->{'wp:featuredmedia'}[0]->source_url;
                     $item->set_image( $media->_embedded->{'wp:featuredmedia'}[0]->source_url );
                 }
                 break;
@@ -205,35 +174,6 @@ class Provider extends BaseProvider {
         $item->add_amf_meta( 'media_id', $media->id );
 
         return $item;
-    }
-
-    /**
-     * Fetch an API endpoint.
-     *
-     * @param string $path API endpoint path (prefixed with /)
-     * @param array $args Query arguments to add to URL.
-     * @param array $options Other options to pass to WP HTTP.
-     * @return array
-     */
-    protected static function fetch( array $args = [] ) {
-        $endpoint = get_media_domain();
-        $url = add_query_arg( urlencode_deep( $args ), $endpoint );
-
-        $request = wp_remote_get( $url );
-
-        if ( is_wp_error( $request ) ) {
-            return null;
-        }
-        $data = json_decode( wp_remote_retrieve_body( $request ) );
-
-        if ( json_last_error() !== JSON_ERROR_NONE ) {
-            return null;
-        }
-
-        return [
-            'headers' => wp_remote_retrieve_headers( $request ),
-            'data' => $data,
-        ];
     }
 
     /**
