@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: AMF WP Multisite
- * Description: Share a Wordpress blog's media library with all sites in a multisite.
+ * Plugin Name: AMF Wordpress
+ * Description: Share a Wordpress blog's media library with other blogs.
  * Author Name: Human Made
  */
 
-namespace AMFWPMultisite;
+namespace AMFWordPress;
 
 require __DIR__ . '/inc/namespace.php';
 

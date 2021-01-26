@@ -1,6 +1,6 @@
 <?php
 
-namespace AMFWPMultisite;
+namespace AMFWordPress;
 
 use AssetManagerFramework\{
 	Audio,
