@@ -9,8 +9,6 @@ function bootstrap() : void {
     add_filter( 'amf/provider_class', __NAMESPACE__ . '\\get_provider' );
     add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_key_setting' );
     add_action( 'admin_init', __NAMESPACE__ . '\\register_settings_ui' );
-    // add_filter( 'amfwpmu_endpoint', __NAMESPACE__ . '\\media_endpoint', 10, 3 );
-
 }
 
 /**
@@ -26,23 +24,15 @@ function get_provider() : string {
 
 
 /**
- * Register the API key setting.
+ * Register the Media domain setting.
  */
 function register_key_setting() : void {
 	register_setting( 'media', 'amfwpmu_domain', [
 		'type' => 'string',
-		'description' => 'Wordpress Blog for Media',
-		'default' => get_site_url(),
+		'description' => 'Domain for WordPress Media Site',
+		'sanitize_callback' => __NAMESPACE__ . '\\sanitize_url',
 	] );
 }
-// Media endpoint filter callback function.
-function get_media_endpoint( $string ) {
-
-    $string = apply_filters( 'amfwpmu_endpoint', '/wp-json/wp/v2/media/' );
-    // (maybe) modify $string.
-    return $string;
-}
-
 
 /**
  * Get the API key.
@@ -51,7 +41,7 @@ function get_media_domain() : ?string {
     $domain = '';
 
 	if ( defined( 'AMFWPMU_DOMAIN' ) ) {
-		$domain = AMFWPMU_DOMAIN;
+		$domain = sanitize_url( AMFWPMU_DOMAIN );
 	} else {
         $domain = get_option( 'amfwpmu_domain', get_site_url() );
     }
@@ -115,4 +105,17 @@ function render_field_ui() : void {
 		/>',
 		esc_attr( $value )
 	);
+}
+
+/**
+ * Ensure the URL field input is only the domain.
+ *
+ * @param $input URL to sanitize.
+ *
+ * @return string
+ */
+function sanitize_url( string $input ) : string {
+	$url = preg_replace( '~/wp-json/wp/v2/media([/?].*)?$~', '', $input );
+
+	return $url;
 }
