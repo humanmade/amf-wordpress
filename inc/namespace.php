@@ -1,4 +1,8 @@
 <?php
+/**
+ * WordPress Integration with AMF
+ *
+ */
 
 namespace AMFWordPress;
 

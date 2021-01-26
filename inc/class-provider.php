@@ -1,4 +1,7 @@
 <?php
+/**
+ * WordPress REST Provider
+ */
 
 namespace AMFWordPress;
 
@@ -52,7 +55,7 @@ class Provider extends BaseProvider {
     }
 
     /**
-     * Retrieve the it for a query.
+     * Retrieve the items for a query.
      *
      * @param array $args Query args from the media library
      *
@@ -61,13 +64,10 @@ class Provider extends BaseProvider {
     protected function request( array $args ) : MediaList {
         $args = $this->parse_args( $args );
 
-        $endpoint = get_media_domain();
-
-        $response = self::remote_request( $endpoint, $args );
+        $response = self::remote_request( get_media_domain(), $args );
         $response = json_decode( $response );
 
         $items = $this->prepare_items( $response );
-
 
         return new MediaList( ...$items );
     }
@@ -93,7 +93,7 @@ class Provider extends BaseProvider {
     /**
      * Get the remote file's size without downloading full file.
      *
-     * @param  string $path
+     * @param string $path Path to file.
      *
      * @return int
      */
@@ -196,6 +196,7 @@ class Provider extends BaseProvider {
      *   image parameters to construct your own image URL.
      *
      * @param stdClass $image
+     *
      * @return array
      */
     protected static function get_image_sizes( stdClass $image ) : array {
