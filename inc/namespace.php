@@ -65,20 +65,20 @@ function register_settings_ui() : void {
 	}
 
 	add_settings_section(
-		'amfwpmultisite',
-		'AMF WPMultisite',
+		'amfwordpress',
+		'Asset Manager Framework - WordPress Integration',
 		__NAMESPACE__ . '\\render_settings_description',
 		'media'
 	);
 
 	add_settings_field(
-		'amfwpmu_domain',
+		'amfwordpress_domain',
 		'Media Domain',
 		__NAMESPACE__ . '\\render_field_ui',
 		'media',
-		'amfwpmultisite',
+		'amfwordpress',
 		[
-			'label_for' => 'amfwpmu_domain',
+			'label_for' => 'amfwordpress_domain',
 		]
 	);
 }
@@ -98,12 +98,12 @@ function render_settings_description() : void {
  * Render the field input.
  */
 function render_field_ui() : void {
-	$value = get_option( 'amfwpmu_domain', '' );
+	$value = get_option( 'amfwordpress_domain', '' );
 	printf(
 		'<input
 			class="regular-text code"
-			id="amfwpmu_domain"
-			name="amfwpmu_domain"
+			id="amfwordpress_domain"
+			name="amfwordpress_domain"
 			type="text"
 			value="%s"
 		/>',
