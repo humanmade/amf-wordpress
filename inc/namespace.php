@@ -1,18 +1,25 @@
 <?php
 /**
- * WordPress Integration with AMF
- *
+ * WordPress integration with AMF.
  */
 
+declare( strict_types=1 );
+
 namespace AMFWordPress;
+
+const SETTINGS_PAGE = 'media';
+const SETTINGS_SECTION = 'amf_wordpress';
+const URL_SETTING = 'amf_wordpress_url';
 
 /**
  * Bootstrap function.
  */
-function bootstrap() : void {
-    add_filter( 'amf/provider_class', __NAMESPACE__ . '\\get_provider' );
-    add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_key_setting' );
-    add_action( 'admin_init', __NAMESPACE__ . '\\register_settings_ui' );
+function bootstrap(): void {
+
+	add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_settings' );
+	add_action( 'admin_init', __NAMESPACE__ . '\\register_settings_ui' );
+
+	add_filter( 'amf/provider_class', __NAMESPACE__ . '\\get_provider' );
 }
 
 /**
@@ -20,65 +27,48 @@ function bootstrap() : void {
  *
  * @return string
  */
-function get_provider() : string {
-    require_once __DIR__ . '/class-provider.php';
+function get_provider(): string {
 
-    return Provider::class;
+	return Provider::class;
 }
 
-
 /**
- * Register the Media domain setting.
+ * Register the settings.
  */
-function register_key_setting() : void {
-	register_setting( 'media', 'amfwpmu_domain', [
-		'type' => 'string',
-		'description' => 'Domain for WordPress Media Site',
-		'sanitize_callback' => __NAMESPACE__ . '\\sanitize_url',
+function register_settings(): void {
+
+	register_setting( SETTINGS_PAGE, URL_SETTING, [
+		'type'              => 'string',
+		'description'       => __( 'URL of the WordPress site to use as media source.', 'amf-wordpress' ),
+		'sanitize_callback' => __NAMESPACE__ . '\\sanitize_wordpress_url',
 	] );
-}
-
-/**
- * Get the API key.
- */
-function get_media_domain() : ?string {
-    $domain = '';
-
-	if ( defined( 'AMFWPMU_DOMAIN' ) ) {
-		$domain = sanitize_url( AMFWPMU_DOMAIN );
-	} else {
-        $domain = get_option( 'amfwpmu_domain', get_site_url() );
-    }
-
-    $url = $domain .  '/wp-json/wp/v2/media/';
-
-	return $url;
 }
 
 /**
  * Register the UI for the settings.
  */
-function register_settings_ui() : void {
-	if ( defined( 'AMFWPMU_DOMAIN' ) ) {
+function register_settings_ui(): void {
+
+	if ( defined( 'AMF_WORDPRESS_URL' ) ) {
 		// Skip the UI.
 		return;
 	}
 
 	add_settings_section(
-		'amfwordpress',
-		'Asset Manager Framework - WordPress Integration',
+		SETTINGS_SECTION,
+		__( 'Asset Manager Framework (WordPress)', 'amf-wordpress' ),
 		__NAMESPACE__ . '\\render_settings_description',
-		'media'
+		SETTINGS_PAGE
 	);
 
 	add_settings_field(
-		'amfwordpress_domain',
-		'Media Domain',
+		URL_SETTING,
+		__( 'WordPress URL', 'amf-wordpress' ),
 		__NAMESPACE__ . '\\render_field_ui',
-		'media',
-		'amfwordpress',
+		SETTINGS_PAGE,
+		SETTINGS_SECTION,
 		[
-			'label_for' => 'amfwordpress_domain',
+			'label_for' => URL_SETTING,
 		]
 	);
 }
@@ -86,40 +76,60 @@ function register_settings_ui() : void {
 /**
  * Render the description for the settings section.
  */
-function render_settings_description() : void {
-	echo '<p>';
-	printf(
-		'Set the default blog url to query for the media library. It must be a WordPress blog.'
-	);
-	echo '</p>';
+function render_settings_description(): void {
+
+	?>
+	<p>
+		<?php _e( 'The Asset Manager Framework (AMF) WordPress provider lets you use another WordPress site as source for your media library.', 'amf-wordpress' ); ?>
+	</p>
+	<?php
 }
 
 /**
- * Render the field input.
+ * Render the settings field UI.
  */
-function render_field_ui() : void {
-	$value = get_option( 'amfwordpress_domain', '' );
-	printf(
-		'<input
-			class="regular-text code"
-			id="amfwordpress_domain"
-			name="amfwordpress_domain"
-			type="text"
-			value="%s"
-		/>',
-		esc_attr( $value )
-	);
+function render_field_ui(): void {
+
+	$value = get_option( URL_SETTING, '' );
+
+	?>
+	<input
+		class="regular-text code"
+		id="<?php echo esc_attr( URL_SETTING ); ?>"
+		name="<?php echo esc_attr( URL_SETTING ); ?>"
+		type="text"
+		value="<?php echo esc_attr( $value ); ?>"
+	/>
+	<p class="description">
+		<?php _e( 'URL of the WordPress site to use as media source.', 'amf-wordpress' ); ?>
+	</p>
+	<?php
 }
 
 /**
- * Ensure the URL field input is only the domain.
+ * Ensure the user input is only the URL.
  *
- * @param $input URL to sanitize.
+ * @param string $input User input to sanitize.
  *
- * @return string
+ * @return string URL.
  */
-function sanitize_url( string $input ) : string {
-	$url = preg_replace( '~/wp-json/wp/v2/media([/?].*)?$~', '', $input );
+function sanitize_wordpress_url( string $input ): string {
+
+	$url = preg_replace( '~/wp-json/wp/v2([/?].*)?$~', '', $input );
+	$url = untrailingslashit( $url );
 
 	return $url;
+}
+
+/**
+ * Get the media endpoint.
+ */
+function get_endpoint(): string {
+
+	$url = defined( 'AMF_WORDPRESS_URL' ) ? AMF_WORDPRESS_URL : get_option( URL_SETTING, '' );
+	$url = sanitize_wordpress_url( $url );
+
+	$endpoint = "{$url}/wp-json/wp/v2/media";
+
+	return $endpoint;
 }

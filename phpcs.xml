@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="AMF WordPress">
+	<description>PHP Coding Standards</description>
+
+	<!-- Set a minimum PHP version for PHPCompatibility. -->
+	<config name="testVersion" value="7.2-" />
+
+	<!-- Show sniff codes in all reports. -->
+	<arg value="s" />
+
+	<!-- Check PHP files only. -->
+	<arg name="extensions" value="php" />
+
+	<!-- Exclude external libraries and builds. -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/asset-manager-framework/*</exclude-pattern>
+
+	<!-- Check for PHP cross-version compatibility. -->
+	<rule ref="PHPCompatibilityWP" />
+
+	<!-- Use the Human Made coding standards. -->
+	<rule ref="HM" />
+</ruleset>
