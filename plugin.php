@@ -8,7 +8,7 @@
  * @license           GPL-3.0-or-later
  *
  * @wordpress-plugin
- * Plugin Name: AMF WordPress
+ * Plugin Name:       AMF WordPress
  * Plugin URI:        https://github.com/humanmade/amf-wordpress
  * Description:       Use another WordPress site as source for your media library.
  * Version:           0.1.0
