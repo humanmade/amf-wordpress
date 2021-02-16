@@ -77,7 +77,6 @@ class Factory {
 
 		switch ( $type ) {
 			case 'image':
-			case 'icon':
 				return $this->create_image( $data );
 
 			case 'video':
@@ -145,14 +144,17 @@ class Factory {
 	 */
 	public function create_image( stdClass $data ): Image {
 
-		$media = new Image( $data->id, $data->mime_type );
+		$item = new Image( $data->id, $data->mime_type );
 
 		$sizes = $this->get_image_sizes( $data );
-		$media->set_sizes( $sizes );
-		$media->set_width( $data->media_details->width );
-		$media->set_height( $data->media_details->height );
+		if ( $sizes ) {
+			$item->set_sizes( $sizes );
+		}
 
-		return $media;
+		$item->set_width( $data->media_details->width );
+		$item->set_height( $data->media_details->height );
+
+		return $item;
 	}
 
 	/**
@@ -213,33 +215,59 @@ class Factory {
 	}
 
 	/**
-	 * Get image url mapping from a given image object.
+	 * Get image size mapping from the given response data.
 	 *
-	 * @param stdClass $image Image Class.
+	 * @param stdClass $data Raw response data from the WordPress REST API.
 	 *
-	 * @return array
+	 * @return array[] Image sizes.
 	 */
-	private function get_image_sizes( stdClass $image ) : array {
-		$required_sizes = [
-			'thumbnail' => [],
-			'medium'    => [],
-			'full'      => [],
+	private function get_image_sizes( stdClass $data ): array {
+
+		if ( empty( $data->media_details->sizes ) ) {
+			return [];
+		}
+
+		$available_sizes = $data->media_details->sizes;
+
+		$possible_sizes = [
+			'thumbnail',
+			'medium',
+			'large',
 		];
 
-		$sizes = $image->media_details->sizes;
 		$registered_sizes = wp_get_registered_image_subsizes();
 
-		$orientation = ( $sizes->full->height > $sizes->full->width ? 'portrait' : 'landscape' );
+		$sizes = [];
 
-		foreach ( $required_sizes as $key => & $size ) {
-			$size = [
-				'width'       => $sizes->{$key}->width,
-				'height'      => $sizes->{$key}->height,
-				'orientation' => $orientation,
-				'url'         => $sizes->{$key}->source_url,
+		foreach ( $possible_sizes as $size ) {
+			$registered_size = $registered_sizes[ $size ] ?? [];
+			if ( ! $registered_size ) {
+				continue;
+			}
+
+			$width = $registered_size['width'];
+
+			$height = $registered_size['height'];
+
+			$sizes[ $size ] = [
+				'width'       => $width,
+				'height'      => $height,
+				'orientation' => $height > $width ? 'portrait' : 'landscape',
+				'url'         => $available_sizes->{$key}->source_url ?? $data->source_url,
 			];
 		}
 
-		return $required_sizes;
+		$width = $data->media_details->width;
+
+		$height = $data->media_details->height;
+
+		$sizes['full'] = [
+			'width'       => $width,
+			'height'      => $height,
+			'orientation' => $height > $width ? 'portrait' : 'landscape',
+			'url'         => $data->source_url,
+		];
+
+		return $sizes;
 	}
 }
