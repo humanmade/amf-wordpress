@@ -220,14 +220,26 @@ class Factory {
 	 * @return array
 	 */
 	private function get_image_sizes( stdClass $image ) : array {
+		$required_sizes = [
+			'thumbnail' => [],
+			'medium'    => [],
+			'full'      => [],
+		];
+
+		$sizes = $image->media_details->sizes;
 		$registered_sizes = wp_get_registered_image_subsizes();
 
-		$sizes = [];
-		foreach ( $registered_sizes as $name => $size ) {
-			$sizes[ $name ] = [
-				'url'    => $image->source_url,
+		$orientation = ( $sizes->full->height > $sizes->full->width ? 'portrait' : 'landscape' );
+
+		foreach ( $required_sizes as $key => & $size ) {
+			$size = [
+				'width'       => $sizes->{$key}->width,
+				'height'      => $sizes->{$key}->height,
+				'orientation' => $orientation,
+				'url'         => $sizes->{$key}->source_url,
 			];
 		}
-		return $sizes;
+
+		return $required_sizes;
 	}
 }
