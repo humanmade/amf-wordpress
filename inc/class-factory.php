@@ -37,7 +37,7 @@ class Factory {
 
 		$item->set_url( $data->source_url );
 		$item->set_title( $data->title->rendered );
-		$item->set_filename( $data->source_url );
+		$item->set_filename( basename( $data->source_url ) );
 		$item->set_link( $data->link );
 
 		if ( $data->alt_text ) {
