@@ -37,7 +37,7 @@ class Factory {
 
 		$item->set_url( $data->source_url );
 		$item->set_title( $data->title->rendered );
-		$item->set_filename( $data->media_details->file );
+		$item->set_filename( $data->source_url );
 		$item->set_link( $data->link );
 
 		if ( $data->alt_text ) {
@@ -59,9 +59,6 @@ class Factory {
 		}
 
 		$item->set_file_size( $this->get_file_size( $data->source_url ) );
-		$item->set_width( $data->media_details->width );
-		$item->set_height( $data->media_details->height );
-		$item->set_sizes( $data->media_details->sizes );
 
 		return $item;
 	}
@@ -150,6 +147,11 @@ class Factory {
 
 		$media = new Image( $data->id, $data->mime_type );
 
+		$sizes = $this->get_image_sizes( $data );
+		$media->set_sizes( $sizes );
+		$media->set_width( $data->media_details->width );
+		$media->set_height( $data->media_details->height );
+
 		return $media;
 	}
 
@@ -208,5 +210,24 @@ class Factory {
 		$file_size = (int) ( $headers['content-length'] ?? 0 );
 
 		return $file_size;
+	}
+
+	/**
+	 * Get image url mapping from a given image object.
+	 *
+	 * @param stdClass $image Image Class.
+	 *
+	 * @return array
+	 */
+	private function get_image_sizes( stdClass $image ) : array {
+		$registered_sizes = wp_get_registered_image_subsizes();
+
+		$sizes = [];
+		foreach ( $registered_sizes as $name => $size ) {
+			$sizes[ $name ] = [
+				'url'    => $image->source_url,
+			];
+		}
+		return $sizes;
 	}
 }

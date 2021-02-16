@@ -108,7 +108,16 @@ class Provider extends BaseProvider {
 		}
 
 		if ( isset( $args['post_mime_type'] ) ) {
-			$query['mime_type'] = $args['post_mime_type'];
+			$types = implode( ',', $args['post_mime_type'] );
+
+			// We use media type as it matches the query arg for non-application types.
+			if ( in_array( $types, [ 'image', 'audio', 'video' ], true ) ) {
+				$query['media_type'] = $types;
+			} elseif ( substr( $args['post_mime_type'][0], 0, strlen( 'application' ) ) === 'application' ) {
+				$query['media_type'] = 'application';
+			} else {
+				$query['mime_type'] = $types; // Any other media type.
+			}
 		}
 
 		// Embed featured image data.
