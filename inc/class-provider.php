@@ -108,13 +108,21 @@ class Provider extends BaseProvider {
 		}
 
 		if ( isset( $args['post_mime_type'] ) ) {
-			$mime_type = $args['post_mime_type'];
+			// Depending on the context of the request (e.g., Media Library page, Image block, Media and Text block),
+			// the post_mime_type argument may be specified as a string or an array of strings. If a string, it may
+			// be a single type only, or a comma-separated list of types.
+			$mime_type = (array) $args['post_mime_type'];
 
-			// Use media type as it matches the query arg for non-application types.
-			if ( in_array( $mime_type, [ 'image', 'video', 'audio' ], true ) ) {
-				$query['media_type'] = $mime_type;
+			if ( count( $mime_type ) === 1 ) {
+				$mime_type = reset( $mime_type );
+				// Use media type as it matches the query arg for non-application types.
+				if ( in_array( $mime_type, [ 'image', 'video', 'audio' ], true ) ) {
+					$query['media_type'] = $mime_type;
+				} else {
+					$query['media_type'] = 'application';
+				}
 			} else {
-				$query['media_type'] = 'application';
+				// TODO: Maybe request media items of any type, and then filter?
 			}
 		}
 
