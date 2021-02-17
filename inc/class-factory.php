@@ -253,7 +253,7 @@ class Factory {
 				'width'       => $width,
 				'height'      => $height,
 				'orientation' => $height > $width ? 'portrait' : 'landscape',
-				'url'         => $available_sizes->{$key}->source_url ?? $data->source_url,
+				'url'         => $available_sizes->{$size}->source_url ?? $data->source_url,
 			];
 		}
 
