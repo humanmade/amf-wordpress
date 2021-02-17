@@ -1,16 +1,48 @@
 {
-	"name": "humanmade/amf-wpmultisite",
-	"description": "Share a WordPress media library between blogs in a multisite.",
-	"type": "wordpress-plugin",
-	"license": "GPL-2.0-or-later",
-	"authors": [
-		{
-			"name": "Human Made",
-			"homepage": "https://humanmade.com/"
-		}
-	],
-	"require": {
-		"php": ">=7.2",
-		"humanmade/asset-manager-framework": "~0.6"
-	}
+    "name": "humanmade/amf-wordpress",
+    "description": "Use another WordPress site as source for your media library.",
+    "type": "wordpress-plugin",
+    "homepage": "https://github.com/humanmade/amf-wordpress",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Human Made",
+            "homepage": "https://humanmade.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/humanmade/orphan-command/issues"
+    },
+    "require": {
+        "php": ">=7.2",
+        "ext-json": "*",
+        "composer/installers": "^1.0",
+        "humanmade/asset-manager-framework": "^0.8.1"
+    },
+    "require-dev": {
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "humanmade/coding-standards": "^1.1",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "autoload": {
+        "classmap": [
+            "inc"
+        ],
+        "files": [
+            "inc/namespace.php"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "lint": "find ./plugin.php ./inc/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 -- php -l",
+        "phpcs": "phpcs .",
+        "test": [
+            "@lint",
+            "@phpcs"
+        ]
+    }
 }

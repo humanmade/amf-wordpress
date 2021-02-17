@@ -1,0 +1,26 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = tab
+indent_size = 4
+insert_final_newline = true
+tab_width = 4
+trim_trailing_whitespace = true
+
+[*.json]
+indent_style = space
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{bash,sh,zsh}]
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
+tab_width = 2
