@@ -108,6 +108,9 @@ class Provider extends BaseProvider {
 		}
 
 		if ( isset( $args['post_mime_type'] ) ) {
+			// Depending on the context of the request (e.g., Media Library page, Image block, Media and Text block),
+			// the post_mime_type argument may be specified as either string or an array of string. If string, it may
+			// be a single type only, or a comma-separated list of types.
 			$mime_type = (array) $args['post_mime_type'];
 
 			if ( count( $mime_type ) === 1 ) {
