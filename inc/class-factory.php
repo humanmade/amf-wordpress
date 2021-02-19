@@ -60,6 +60,17 @@ class Factory {
 
 		$item->set_file_size( $this->get_file_size( $data->source_url ) );
 
+		$sizes = $this->get_sizes( $data );
+		if ( $sizes ) {
+			$item->set_sizes( $sizes );
+		}
+
+		list( $author_name, $author_link ) = $this->get_author( $data );
+		if ( $author_name ) {
+			$item->authorName = $author_name;
+			$item->authorLink = $author_link;
+		}
+
 		return $item;
 	}
 
@@ -146,11 +157,6 @@ class Factory {
 
 		$item = new Image( $data->id, $data->mime_type );
 
-		$sizes = $this->get_image_sizes( $data );
-		if ( $sizes ) {
-			$item->set_sizes( $sizes );
-		}
-
 		$item->set_width( $data->media_details->width );
 		$item->set_height( $data->media_details->height );
 
@@ -186,6 +192,20 @@ class Factory {
 	}
 
 	/**
+	 * Return the author name and URL included in the given response data.
+	 *
+	 * @param stdClass $data Raw response data from the WordPress REST API.
+	 *
+	 * @return string[] Author information.
+	 */
+	private function get_author( stdClass $data ): array {
+
+		$author = $data->_embedded->author[0] ?? null;
+
+		return [ (string) ( $author->name ?? '' ), (string) ( $author->url ?? '' ) ];
+	}
+
+	/**
 	 * Return the featured media URL included in the given response data.
 	 *
 	 * @param stdClass $data Raw response data from the WordPress REST API.
@@ -215,13 +235,13 @@ class Factory {
 	}
 
 	/**
-	 * Get image size mapping from the given response data.
+	 * Get the image size mapping from the given response data.
 	 *
 	 * @param stdClass $data Raw response data from the WordPress REST API.
 	 *
 	 * @return array[] Image sizes.
 	 */
-	private function get_image_sizes( stdClass $data ): array {
+	private function get_sizes( stdClass $data ): array {
 
 		if ( empty( $data->media_details->sizes ) ) {
 			return [];
