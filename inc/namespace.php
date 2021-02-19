@@ -25,7 +25,7 @@ function bootstrap(): void {
 /**
  * Get the provider for AMF.
  *
- * @return string
+ * @return string Provider class name.
  */
 function get_provider(): string {
 
@@ -123,6 +123,8 @@ function sanitize_wordpress_url( string $input ): string {
 
 /**
  * Get the media endpoint.
+ *
+ * @return string Endpoint.
  */
 function get_endpoint(): string {
 
