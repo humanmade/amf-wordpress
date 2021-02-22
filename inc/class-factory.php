@@ -60,6 +60,11 @@ class Factory {
 
 		$item->set_file_size( $this->get_file_size( $data->source_url ) );
 
+		$featured_media_url = $this->get_featured_media_url( $data );
+		if ( $featured_media_url ) {
+			$item->set_image( $featured_media_url );
+		}
+
 		$sizes = $this->get_sizes( $data );
 		if ( $sizes ) {
 			$item->set_sizes( $sizes );
@@ -67,8 +72,7 @@ class Factory {
 
 		list( $author_name, $author_link ) = $this->get_author( $data );
 		if ( $author_name ) {
-			$item->authorName = $author_name;
-			$item->authorLink = $author_link;
+			$item->set_author( $author_name, $author_link );
 		}
 
 		return $item;
@@ -123,12 +127,6 @@ class Factory {
 			$item->set_meta( $data->meta );
 		}
 
-		$featured_media_url = $this->get_featured_media_url( $data );
-		if ( $featured_media_url ) {
-			$item->set_image( $featured_media_url );
-			$item->set_thumb( $featured_media_url );
-		}
-
 		return $item;
 	}
 
@@ -180,12 +178,6 @@ class Factory {
 
 		if ( $data->meta ) {
 			$item->set_meta( $data->meta );
-		}
-
-		$featured_media_url = $this->get_featured_media_url( $data );
-		if ( $featured_media_url ) {
-			$item->set_image( $featured_media_url );
-			$item->set_thumb( $featured_media_url );
 		}
 
 		return $item;

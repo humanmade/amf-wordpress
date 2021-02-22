@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "54e8d09df801c426362cc45f6cd03640",
+    "content-hash": "bc7040b85c24c5a54f89ab63903a04c1",
     "packages": [
         {
             "name": "composer/installers",
@@ -152,16 +152,16 @@
         },
         {
             "name": "humanmade/asset-manager-framework",
-            "version": "0.8.1",
+            "version": "0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/humanmade/asset-manager-framework.git",
-                "reference": "342fd5d83845cae9cbf5c7516477b4d8a0b50516"
+                "reference": "de1efcb7d3f1e3be52d63f750b91d8ca35922491"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/humanmade/asset-manager-framework/zipball/342fd5d83845cae9cbf5c7516477b4d8a0b50516",
-                "reference": "342fd5d83845cae9cbf5c7516477b4d8a0b50516",
+                "url": "https://api.github.com/repos/humanmade/asset-manager-framework/zipball/de1efcb7d3f1e3be52d63f750b91d8ca35922491",
+                "reference": "de1efcb7d3f1e3be52d63f750b91d8ca35922491",
                 "shasum": ""
             },
             "require": {
@@ -175,6 +175,11 @@
                 "wp-coding-standards/wpcs": "~2.2.0"
             },
             "type": "wordpress-plugin",
+            "autoload": {
+                "psr-4": {
+                    "AssetManagerFramework\\": "inc/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0-or-later"
@@ -187,7 +192,7 @@
             ],
             "description": "A framework for overriding the WordPress media library with an external asset provider.",
             "homepage": "https://github.com/humanmade/asset-manager-framework/",
-            "time": "2020-09-30T12:39:15+00:00"
+            "time": "2021-02-22T08:07:48+00:00"
         }
     ],
     "packages-dev": [
