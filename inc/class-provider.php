@@ -126,7 +126,7 @@ class Provider extends BaseProvider {
 			}
 		}
 
-		// Embed featured image data.
+		// Embed author and featured image data.
 		$query['_embed'] = 1;
 
 		return $query;
