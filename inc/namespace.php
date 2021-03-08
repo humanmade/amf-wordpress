@@ -19,17 +19,19 @@ function bootstrap(): void {
 	add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_settings' );
 	add_action( 'admin_init', __NAMESPACE__ . '\\register_settings_ui' );
 
-	add_filter( 'amf/provider_class', __NAMESPACE__ . '\\get_provider' );
+	add_filter( 'amf/provider', __NAMESPACE__ . '\\get_provider' );
 }
 
 /**
  * Get the provider for AMF.
  *
- * @return string Provider class name.
+ * @return Provider Provider instance.
  */
-function get_provider(): string {
+function get_provider(): Provider {
 
-	return Provider::class;
+	return new Provider(
+		new Factory()
+	);
 }
 
 /**

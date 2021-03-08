@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc7040b85c24c5a54f89ab63903a04c1",
+    "content-hash": "7fbd44418992195d84c0681c3a0b623f",
     "packages": [
         {
             "name": "composer/installers",
@@ -152,16 +152,16 @@
         },
         {
             "name": "humanmade/asset-manager-framework",
-            "version": "0.9.0",
+            "version": "0.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/humanmade/asset-manager-framework.git",
-                "reference": "de1efcb7d3f1e3be52d63f750b91d8ca35922491"
+                "reference": "7e7fba934b368f139360847412f60cf4d9c47924"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/humanmade/asset-manager-framework/zipball/de1efcb7d3f1e3be52d63f750b91d8ca35922491",
-                "reference": "de1efcb7d3f1e3be52d63f750b91d8ca35922491",
+                "url": "https://api.github.com/repos/humanmade/asset-manager-framework/zipball/7e7fba934b368f139360847412f60cf4d9c47924",
+                "reference": "7e7fba934b368f139360847412f60cf4d9c47924",
                 "shasum": ""
             },
             "require": {
@@ -192,7 +192,7 @@
             ],
             "description": "A framework for overriding the WordPress media library with an external asset provider.",
             "homepage": "https://github.com/humanmade/asset-manager-framework/",
-            "time": "2021-02-22T08:07:48+00:00"
+            "time": "2021-03-08T11:59:48+00:00"
         }
     ],
     "packages-dev": [

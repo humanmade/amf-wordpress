@@ -35,6 +35,15 @@ class Factory {
 
 		$item = $this->create_item( $data );
 
+		if ( $data->meta ) {
+			$item->set_meta( array_merge( $data->meta, $item->meta ) );
+		}
+
+		$attachment_metadata = $this->get_attachment_metadata( $data );
+		if ( $attachment_metadata ) {
+			$item->add_meta( '_wp_attachment_metadata', $attachment_metadata );
+		}
+
 		$item->set_url( $data->source_url );
 		$item->set_title( $data->title->rendered );
 		$item->set_filename( basename( $data->source_url ) );
@@ -119,12 +128,16 @@ class Factory {
 
 		$item = new Audio( $data->id, $data->mime_type );
 
-		if ( $data->media_details->length_formatted ) {
-			$item->set_length( $data->media_details->length_formatted );
+		if ( $data->media_details->album ) {
+			$item->set_album( $data->media_details->album );
 		}
 
-		if ( $data->meta ) {
-			$item->set_meta( $data->meta );
+		if ( $data->media_details->artist ) {
+			$item->set_artist( $data->media_details->artist );
+		}
+
+		if ( $data->media_details->length_formatted ) {
+			$item->set_length( $data->media_details->length_formatted );
 		}
 
 		return $item;
@@ -176,11 +189,30 @@ class Factory {
 			$item->set_length( $data->media_details->length_formatted );
 		}
 
-		if ( $data->meta ) {
-			$item->set_meta( $data->meta );
+		return $item;
+	}
+
+	/**
+	 * Return the relevant attachment metadata included in the given response data.
+	 *
+	 * @param stdClass $data Raw response data from the WordPress REST API.
+	 *
+	 * @return array Attachment metadata.
+	 */
+	private function get_attachment_metadata( stdClass $data ): array {
+
+		if ( empty( $data->media_details ) ) {
+			return [];
 		}
 
-		return $item;
+		$attachment_metadata = $data->media_details;
+
+		unset( $attachment_metadata['file'] );
+		unset( $attachment_metadata['width'] );
+		unset( $attachment_metadata['height'] );
+		unset( $attachment_metadata['sizes'] );
+
+		return $attachment_metadata;
 	}
 
 	/**

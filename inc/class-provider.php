@@ -27,10 +27,12 @@ class Provider extends BaseProvider {
 
 	/**
 	 * Provider constructor.
+	 *
+	 * @param Factory $factory AMF media item factory.
 	 */
-	public function __construct() {
+	public function __construct( Factory $factory ) {
 
-		$this->factory = new Factory();
+		$this->factory = $factory;
 	}
 
 	/**
@@ -126,7 +128,7 @@ class Provider extends BaseProvider {
 			}
 		}
 
-		// Embed author and featured image data.
+		// Embed author and featured media data.
 		$query['_embed'] = 1;
 
 		return $query;
