@@ -205,7 +205,7 @@ class Factory {
 			return [];
 		}
 
-		$attachment_metadata = $data->media_details;
+		$attachment_metadata = json_decode( json_encode( $data->media_details ), true );
 
 		unset( $attachment_metadata['file'] );
 		unset( $attachment_metadata['width'] );
