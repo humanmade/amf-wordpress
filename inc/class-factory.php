@@ -185,7 +185,7 @@ class Factory {
 
 		$item = new Video( $data->id, $data->mime_type );
 
-		if ( $data->media_details->length_formatted ) {
+		if ( isset( $data->media_details->length_formatted ) ) {
 			$item->set_length( $data->media_details->length_formatted );
 		}
 
