@@ -133,6 +133,10 @@ function get_endpoint(): string {
 	$url = defined( 'AMF_WORDPRESS_URL' ) ? AMF_WORDPRESS_URL : get_option( URL_SETTING, '' );
 	$url = sanitize_wordpress_url( $url );
 
+	if ( empty( $url ) ) {
+		$url = home_url();
+	}
+
 	$endpoint = "{$url}/wp-json/wp/v2/media";
 
 	return $endpoint;
