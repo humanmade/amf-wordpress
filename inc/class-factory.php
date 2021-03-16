@@ -128,15 +128,15 @@ class Factory {
 
 		$item = new Audio( $data->id, $data->mime_type );
 
-		if ( $data->media_details->album ) {
+		if ( isset( $data->media_details->album ) ) {
 			$item->set_album( $data->media_details->album );
 		}
 
-		if ( $data->media_details->artist ) {
+		if ( isset( $data->media_details->artist ) ) {
 			$item->set_artist( $data->media_details->artist );
 		}
 
-		if ( $data->media_details->length_formatted ) {
+		if ( isset( $data->media_details->length_formatted ) ) {
 			$item->set_length( $data->media_details->length_formatted );
 		}
 
