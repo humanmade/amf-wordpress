@@ -36,7 +36,8 @@ class Factory {
 		$item = $this->create_item( $data );
 
 		if ( $data->meta ) {
-			$item->set_meta( array_merge( $data->meta, $item->meta ) );
+			$data_meta = json_decode( json_encode( $data->meta ), true );
+			$item->set_meta( array_merge( $data_meta, $item->meta ) );
 		}
 
 		$attachment_metadata = $this->get_attachment_metadata( $data );
