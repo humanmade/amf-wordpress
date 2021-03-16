@@ -68,8 +68,6 @@ class Factory {
 			$item->set_modified( strtotime( $data->modified ) );
 		}
 
-		$item->set_file_size( $this->get_file_size( $data->source_url ) );
-
 		$featured_media_url = $this->get_featured_media_url( $data );
 		if ( $featured_media_url ) {
 			$item->set_image( $featured_media_url );
@@ -240,23 +238,6 @@ class Factory {
 	private function get_featured_media_url( stdClass $data ): string {
 
 		return (string) ( $data->_embedded->{'wp:featuredmedia'}[0]->source_url ?? '' );
-	}
-
-	/**
-	 * Get the remote file's size without downloading the full file.
-	 *
-	 * @param string $url Target URL.
-	 *
-	 * @return int File size in bytes.
-	 */
-	private function get_file_size( string $url ): int {
-
-		$headers = get_headers( $url, 1 ) ?: [];
-		$headers = array_change_key_case( $headers );
-
-		$file_size = (int) ( $headers['content-length'] ?? 0 );
-
-		return $file_size;
 	}
 
 	/**
