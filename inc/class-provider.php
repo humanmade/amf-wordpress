@@ -51,7 +51,7 @@ class Provider extends BaseProvider {
 		$url = get_endpoint();
 		$url = add_query_arg( $args, $url );
 
-		$response = self::remote_request( $url, [
+		$response = $this->remote_request( $url, [
 			'headers' => [
 				'Accept-Encoding' => 'gzip, deflate',
 				'Connection'      => 'Keep-Alive',
