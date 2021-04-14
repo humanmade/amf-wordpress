@@ -65,7 +65,7 @@ class Provider extends BaseProvider {
 		if ( json_last_error() ) {
 			throw new Exception( sprintf(
 				/* translators: %s: Error message */
-				__( 'Error fetching media: %s', 'amf-wordpress' ),
+				__( 'Media error: %s', 'amf-wordpress' ),
 				json_last_error_msg()
 			) );
 		}
