@@ -11,7 +11,7 @@
  * Plugin Name:       AMF WordPress
  * Plugin URI:        https://github.com/humanmade/amf-wordpress
  * Description:       Use another WordPress site as source for your media library.
- * Version:           0.1.3
+ * Version:           0.1.4
  * Requires at least: 2.8
  * Requires PHP:      7.2
  * Author:            Human Made
