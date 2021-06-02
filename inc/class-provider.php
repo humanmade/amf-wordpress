@@ -48,23 +48,23 @@ class Provider extends BaseProvider {
 	 */
     protected function request(array $args): MediaList
     {
-        $args = $this->parse_args($args);
+        $args = $this->parse_args( $args );
 
-        $is_local_multisite = apply_filters('amf/is_local_mulitisite', false);
-        $local_blog_id = apply_filters('amf/local_blog_id', 1);
+        $is_local_multisite = apply_filters( 'amf/is_local_mulitisite', false );
+        $local_blog_id = apply_filters( 'amf/local_blog_id', 1 );
 
         // if this is a local multisite, run a query instead of hitting the external API.
         if ( $is_local_multisite ) {
             $current_blog = get_current_blog_id();
 
-            switch_to_blog($local_blog_id);
+            switch_to_blog( $local_blog_id );
 
             $controller = new WP_REST_Attachments_Controller( 'attachment' );
             $request = new WP_REST_Request( 'GET', '/wp/v2/media', $controller->get_collection_params() );
             $request->set_query_params( $args );
             $response = $controller->get_items( $request );
 
-            if ( !empty( $response ) && isset( $response->data )) {
+            if ( !empty( $response ) && isset( $response->data ) ) {
                 $response = array_map(function ( $item ) {
 					return json_decode( json_encode( $item ), false );
                 }, $response->data);
@@ -85,7 +85,7 @@ class Provider extends BaseProvider {
             ]);
             $response = json_decode( $response );
 
-            if (json_last_error()) {
+            if ( json_last_error() ) {
                 throw new Exception(sprintf(
                     /* translators: %s: Error message */
                     __('Media error: %s', 'amf-wordpress'),
