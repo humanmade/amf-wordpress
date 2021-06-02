@@ -46,7 +46,7 @@ class Provider extends BaseProvider {
 	 *
 	 * @throws Exception If the REST API response could not be decoded.
 	 */
-    protected function request(array $args): MediaList
+    protected function request( array $args ): MediaList
     {
         $args = $this->parse_args( $args );
 
