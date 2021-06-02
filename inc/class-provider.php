@@ -10,6 +10,8 @@ namespace AMFWordPress;
 use AssetManagerFramework\MediaList;
 use AssetManagerFramework\Provider as BaseProvider;
 use Exception;
+use WP_REST_Attachments_Controller;
+use WP_REST_Request;
 
 /**
  * AMF WordPress provider implementation.
