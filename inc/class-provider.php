@@ -44,40 +44,62 @@ class Provider extends BaseProvider {
 	 *
 	 * @throws Exception If the REST API response could not be decoded.
 	 */
-	protected function request( array $args ): MediaList {
+    protected function request(array $args): MediaList
+    {
+        $args = $this->parse_args($args);
 
-		$args = $this->parse_args( $args );
+        $is_local_multisite = apply_filters('amf/is_local_mulitisite', false);
+        $local_blog_id = apply_filters('amf/local_blog_id', 1);
 
-		$url = get_endpoint();
-		$url = add_query_arg( $args, $url );
+        // if this is a local multisite, run a query instead of hitting the external API.
+        if ( $is_local_multisite ) {
+            $current_blog = get_current_blog_id();
 
-		$response = $this->remote_request( $url, [
-			'headers' => [
-				'Accept-Encoding' => 'gzip, deflate',
-				'Connection'      => 'Keep-Alive',
-				'Content-Type'    => 'application/json',
-				'Keep-Alive'      => 30,
-			],
-			'timeout' => 30,
-		] );
-		$response = json_decode( $response );
+            switch_to_blog($local_blog_id);
 
-		if ( json_last_error() ) {
-			throw new Exception( sprintf(
-				/* translators: %s: Error message */
-				__( 'Media error: %s', 'amf-wordpress' ),
-				json_last_error_msg()
-			) );
-		}
+            $controller = new WP_REST_Attachments_Controller( 'attachment' );
+            $request = new WP_REST_Request( 'GET', '/wp/v2/media', $controller->get_collection_params() );
+            $request->set_query_params( $args );
+            $response = $controller->get_items( $request );
 
-		if ( ! is_array( $response ) || ! $response ) {
-			return new MediaList();
-		}
+            if ( !empty( $response ) && isset( $response->data )) {
+                $response = array_map(function ( $item ) {
+					return json_decode( json_encode( $item ), false );
+                }, $response->data);
+            }
 
-		$items = array_map( [ $this->factory, 'create' ], $response );
+            switch_to_blog( $current_blog );
+        } else {
+            $url = get_endpoint();
+            $url = add_query_arg( $args, $url );
+            $response = $this->remote_request( $url, [
+                'headers' => [
+                    'Accept-Encoding' => 'gzip, deflate',
+                    'Connection'      => 'Keep-Alive',
+                    'Content-Type'    => 'application/json',
+                    'Keep-Alive'      => 30,
+                ],
+                'timeout' => 30,
+            ]);
+            $response = json_decode( $response );
 
-		return new MediaList( ...$items );
-	}
+            if (json_last_error()) {
+                throw new Exception(sprintf(
+                    /* translators: %s: Error message */
+                    __('Media error: %s', 'amf-wordpress'),
+                    json_last_error_msg()
+                ));
+            }
+        }
+
+        if (! is_array( $response ) || ! $response) {
+            return new MediaList();
+        }
+
+        $items = array_map( [ $this->factory, 'create' ], $response );
+
+        return new MediaList(...$items);
+    }
 
 	/**
 	 * Parse the given input query arguments into the according REST query arguments.
