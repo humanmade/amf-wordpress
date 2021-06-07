@@ -36,6 +36,53 @@ class Provider extends BaseProvider {
 	}
 
 	/**
+	 * Return the provider ID.
+	 *
+	 * @return string
+	 */
+	public function get_id() : string {
+		return 'wordpress'; // phpcs:ignore
+	}
+
+	/**
+	 * Return the provider name.
+	 *
+	 * @return string
+	 * @throws Exception If site name cannot be found
+	 */
+	public function get_name() : string {
+		$name = wp_cache_get( 'amf_wordpress_site_name' );
+		if ( $name ) {
+			return apply_filters( 'amf_wordpress_provider_name', $name );
+		}
+
+		$name = __( 'External WordPress Media', 'amf-wordpress' );
+
+		try {
+			$url = str_replace( 'wp/v2/media', '', get_endpoint() );
+			$response = $this->remote_request( $url, [
+				'headers' => [
+					'Content-Type' => 'application/json',
+				],
+				'timeout' => 5,
+			] );
+			$response = json_decode( $response );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new Exception( json_last_error_msg() );
+			}
+
+			$name = sprintf( '%s %s', $response->name, __( 'Media' ) );
+
+			wp_cache_set( 'amf_wordpress_site_name', $name );
+		} catch ( Exception $error ) {
+			trigger_error( $error->getMessage() );
+		}
+
+		return apply_filters( 'amf_wordpress_provider_name', $name );
+	}
+
+	/**
 	 * Retrieve the items for a query.
 	 *
 	 * @param array $args Query args from the media library.
@@ -62,7 +109,7 @@ class Provider extends BaseProvider {
 		] );
 		$response = json_decode( $response );
 
-		if ( json_last_error() ) {
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new Exception( sprintf(
 				/* translators: %s: Error message */
 				__( 'Error fetching media: %s', 'amf-wordpress' ),
