@@ -50,11 +50,9 @@ class Provider extends BaseProvider {
     {
         $args = $this->parse_args( $args );
 
-        $is_local_multisite = apply_filters( 'amf/is_local_mulitisite', false );
-        $local_blog_id = apply_filters( 'amf/local_blog_id', 1 );
-
         // if this is a local multisite, run a query instead of hitting the external API.
-        if ( $is_local_multisite ) {
+        if ( defined('AMF_LOCAL_BLOG_ID' ) {
+			$local_blog_id = AMF_LOCAL_BLOG_ID;
             $current_blog = get_current_blog_id();
 
             switch_to_blog( $local_blog_id );
