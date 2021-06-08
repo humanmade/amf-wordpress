@@ -51,11 +51,10 @@ class Provider extends BaseProvider {
         $args = $this->parse_args( $args );
 
         // if this is a local multisite, run a query instead of hitting the external API.
-        if ( defined( 'AMF_LOCAL_BLOG_ID' ) {
-			  $local_blog_id = AMF_LOCAL_BLOG_ID;
-            $current_blog = get_current_blog_id();
+        if ( is_using_local_site() ) {
+			$localBlogId = get_local_site_id();
 
-            switch_to_blog( $local_blog_id );
+            switch_to_blog( $localBlogId );
 
             $controller = new WP_REST_Attachments_Controller( 'attachment' );
             $request = new WP_REST_Request( 'GET', '/wp/v2/media', $controller->get_collection_params() );
@@ -68,7 +67,7 @@ class Provider extends BaseProvider {
                 }, $response->data);
             }
 
-            switch_to_blog( $current_blog );
+            restore_current_blog();
         } else {
             $url = get_endpoint();
             $url = add_query_arg( $args, $url );

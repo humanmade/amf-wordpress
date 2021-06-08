@@ -141,3 +141,28 @@ function get_endpoint(): string {
 
 	return $endpoint;
 }
+
+
+/**
+ * Determines if the current site using a local override.
+ *
+ * @return boolean
+ */
+function is_using_local_site(): boolean {
+
+	return defined( 'AMF_WORDPRESS_SITE_ID' ) && isset(AMF_WORDPRESS_SITE_ID);
+}
+
+/**
+ * Returns current local site id
+ *
+ * @return string
+ */
+function get_local_site_id() {
+
+	if( is_using_local_site() ) {
+		return apply_filters( 'amf/local_site_id' , AMF_WORDPRESS_SITE_ID);
+	}
+
+	return apply_filters( 'amf/local_site_id' , null);
+}

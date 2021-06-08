@@ -29,6 +29,27 @@ This could be an external WordPress site or another site in a multisite installa
 This URL can also be defined at the code level in the `AMF_WORDPRESS_URL` constant.
 If this constant is defined then the setting on the Media settings screen will not be shown.
 
+### Local Multisites
+ By default, the Plugin will make a remote request to the provided `AMF_WORDPRESS_URL` site.
+ However, if the site is actually a subsite of a multisite setup, you can instead use database queries.
+ To do this, define the constant `AMF_WORDPRESS_SITE_ID` and set it to the blog id of your central library.
+
+ For example:
+
+ ```
+  define('AMF_WORDPRESS_SITE_ID', 1);
+ ```
+
+### Filters
+  `'amf/local_site_id'`: can be used to augment `AMF_WORDPRESS_SITE_ID`
+
+  For example:
+  ```
+   add_filter( 'amf/local_site_id' , function($siteId) {
+       return $siteId + 1;
+   }, 10, 1);
+  ```
+
 ## License
 
 Copyright 2021 Human Made. Licensed under the GPLv3 or later.
