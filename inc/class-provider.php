@@ -62,7 +62,7 @@ class Provider extends BaseProvider {
 			$response = $controller->get_items( $request );
 
 			if ( !empty( $response ) && isset( $response->data ) ) {
-				$response = array_map(function ( $item ) {
+				$response = array_map( function ( $item ) {
 					return json_decode( json_encode( $item ), false );
 				}, $response->data);
 			}
