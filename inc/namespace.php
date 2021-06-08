@@ -148,9 +148,9 @@ function get_endpoint(): string {
  *
  * @return boolean
  */
-function is_using_local_site(): boolean {
+function is_using_local_site(): bool {
 
-	return defined( 'AMF_WORDPRESS_SITE_ID' ) && isset(AMF_WORDPRESS_SITE_ID);
+	return defined( 'AMF_WORDPRESS_SITE_ID' ) && AMF_WORDPRESS_SITE_ID;
 }
 
 /**
