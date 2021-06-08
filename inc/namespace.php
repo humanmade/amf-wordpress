@@ -160,7 +160,7 @@ function is_using_local_site(): bool {
  */
 function get_local_site_id() {
 
-	if( is_using_local_site() ) {
+	if ( is_using_local_site() ) {
 		return apply_filters( 'amf/local_site_id' , AMF_WORDPRESS_SITE_ID);
 	}
 
