@@ -57,14 +57,14 @@ class Provider extends BaseProvider {
 			switch_to_blog( $localBlogId );
 
 			$controller = new WP_REST_Attachments_Controller( 'attachment' );
-			$request = new WP_REST_Request( 'GET', '/wp/v2/media', $controller->get_collection_params() );
+			$request = new WP_REST_Request( 'GET' , '/wp/v2/media' , $controller->get_collection_params() );
 			$request->set_query_params( $args );
 			$response = $controller->get_items( $request );
 
-			if ( !empty( $response ) && isset( $response->data ) ) {
+			if ( ! empty( $response ) && isset( $response->data ) ) {
 				$response = array_map( function ( $item ) {
 					return json_decode( json_encode( $item ), false );
-				}, $response->data);
+				}, $response->data );
 			}
 
 			restore_current_blog();
