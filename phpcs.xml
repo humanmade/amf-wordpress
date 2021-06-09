@@ -19,5 +19,7 @@
 	<rule ref="PHPCompatibilityWP" />
 
 	<!-- Use the Human Made coding standards. -->
-	<rule ref="HM" />
+	<rule ref="HM">
+		<exclude name="WordPress.WP.CapitalPDangit" />
+	</rule>
 </ruleset>
