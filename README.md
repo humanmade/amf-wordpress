@@ -45,9 +45,9 @@ define( 'AMF_WORDPRESS_SITE_ID', 1 );
 
   For example:
   ```
-   add_filter( 'amf/local_site_id' , function($siteId) {
-       return $siteId + 1;
-   }, 10, 1);
+   add_filter( 'amf/local_site_id' , function( $site_id ) {
+       return $site_id + 1;
+   }, 10, 1 );
   ```
 
 ## License
