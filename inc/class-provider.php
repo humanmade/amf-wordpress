@@ -51,7 +51,7 @@ class Provider extends BaseProvider {
 
         // if this is a local multisite, run a query instead of hitting the external API.
         if ( is_using_local_site() ) {
-			$localBlogId = get_local_site_id();
+			$local_blog_id = get_local_site_id();
 
 			switch_to_blog( $localBlogId );
 
