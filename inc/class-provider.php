@@ -96,7 +96,7 @@ class Provider extends BaseProvider {
 
         $items = array_map( [ $this->factory, 'create' ], $response );
 
-        return new MediaList(...$items);
+        return new MediaList( ...$items );
     }
 
 	/**
