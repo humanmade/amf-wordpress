@@ -19,5 +19,13 @@
 	<rule ref="PHPCompatibilityWP" />
 
 	<!-- Use the Human Made coding standards. -->
-	<rule ref="HM" />
+	<rule ref="HM">
+		<exclude name="WordPress.WP.CapitalPDangit" />
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.ValidHookName">
+		<properties>
+			<property name="additionalWordDelimiters" value="-/" />
+		</properties>
+	</rule>
 </ruleset>

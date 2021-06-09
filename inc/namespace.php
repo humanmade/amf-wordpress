@@ -7,6 +7,8 @@ declare( strict_types=1 );
 
 namespace AMFWordPress;
 
+use AssetManagerFramework\ProviderRegistry;
+
 const SETTINGS_PAGE = 'media';
 const SETTINGS_SECTION = 'amf_wordpress';
 const URL_SETTING = 'amf_wordpress_url';
@@ -19,19 +21,17 @@ function bootstrap(): void {
 	add_action( 'plugins_loaded', __NAMESPACE__ . '\\register_settings' );
 	add_action( 'admin_init', __NAMESPACE__ . '\\register_settings_ui' );
 
-	add_filter( 'amf/provider', __NAMESPACE__ . '\\get_provider' );
+	add_action( 'amf/register_providers', __NAMESPACE__ . '\\register_provider' );
 }
 
 /**
- * Get the provider for AMF.
+ * Register the provider with AMF.
  *
- * @return Provider Provider instance.
+ * @param ProviderRegistry $provider_registry Provider registry instance.
  */
-function get_provider(): Provider {
+function register_provider( ProviderRegistry $provider_registry ): void {
 
-	return new Provider(
-		new Factory()
-	);
+	$provider_registry->register( new Provider( new Factory() ) );
 }
 
 /**

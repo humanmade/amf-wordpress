@@ -38,6 +38,26 @@ class Provider extends BaseProvider {
 	}
 
 	/**
+	 * Return the provider ID.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+
+		return 'wordpress';
+	}
+
+	/**
+	 * Return the provider name.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+
+		return (string) apply_filters( 'amf/wordpress/provider_name', __( 'External WordPress Media', 'amf-wordpress' ) );
+	}
+
+	/**
 	 * Retrieve the items for a query.
 	 *
 	 * @param array $args Query args from the media library.
@@ -68,26 +88,29 @@ class Provider extends BaseProvider {
 
 			restore_current_blog();
         } else {
-            $url = get_endpoint();
-            $url = add_query_arg( $args, $url );
-            $response = $this->remote_request( $url, [
-                'headers' => [
-                    'Accept-Encoding' => 'gzip, deflate',
-                    'Connection'      => 'Keep-Alive',
-                    'Content-Type'    => 'application/json',
-                    'Keep-Alive'      => 30,
-                ],
-                'timeout' => 30,
-            ]);
-            $response = json_decode( $response );
+			$args = $this->parse_args( $args );
 
-            if ( json_last_error() ) {
-                throw new Exception(sprintf(
-                    /* translators: %s: Error message */
-                    __('Media error: %s', 'amf-wordpress'),
-                    json_last_error_msg()
-                ));
-            }
+			$url = get_endpoint();
+			$url = add_query_arg( $args, $url );
+
+			$response = $this->remote_request( $url, [
+				'headers' => [
+					'Accept-Encoding' => 'gzip, deflate',
+					'Connection'      => 'Keep-Alive',
+					'Content-Type'    => 'application/json',
+					'Keep-Alive'      => 30,
+				],
+				'timeout' => 30,
+			] );
+			$response = json_decode( $response );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new Exception( sprintf(
+					/* translators: %s: Error message */
+					__( 'Media error: %s', 'amf-wordpress' ),
+					json_last_error_msg()
+				) );
+			}
         }
 
         if (! is_array( $response ) || ! $response) {
