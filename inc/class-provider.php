@@ -71,7 +71,7 @@ class Provider extends BaseProvider {
 		$url = get_endpoint();
 		$url = add_query_arg( $args, $url );
 
-		$response = self::remote_request( $url, [
+		$response = $this->remote_request( $url, [
 			'headers' => [
 				'Accept-Encoding' => 'gzip, deflate',
 				'Connection'      => 'Keep-Alive',
@@ -85,7 +85,7 @@ class Provider extends BaseProvider {
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new Exception( sprintf(
 				/* translators: %s: Error message */
-				__( 'Error fetching media: %s', 'amf-wordpress' ),
+				__( 'Media error: %s', 'amf-wordpress' ),
 				json_last_error_msg()
 			) );
 		}
