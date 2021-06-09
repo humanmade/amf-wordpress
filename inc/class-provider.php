@@ -40,7 +40,8 @@ class Provider extends BaseProvider {
 	 *
 	 * @return string
 	 */
-	public function get_id() : string {
+	public function get_id(): string {
+
 		return 'wordpress'; // phpcs:ignore
 	}
 
@@ -50,7 +51,8 @@ class Provider extends BaseProvider {
 	 * @return string
 	 * @throws Exception If site name cannot be found
 	 */
-	public function get_name() : string {
+	public function get_name(): string {
+
 		$name = wp_cache_get( 'amf_wordpress_site_name' );
 		if ( $name ) {
 			return apply_filters( 'amf_wordpress_provider_name', $name );
