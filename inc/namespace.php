@@ -99,7 +99,7 @@ function render_field_ui(): void {
 		class="regular-text code"
 		id="<?php echo esc_attr( URL_SETTING ); ?>"
 		name="<?php echo esc_attr( URL_SETTING ); ?>"
-		type="text"
+		type="url"
 		value="<?php echo esc_attr( $value ); ?>"
 	/>
 	<p class="description">
