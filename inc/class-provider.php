@@ -49,7 +49,6 @@ class Provider extends BaseProvider {
 	 * Return the provider name.
 	 *
 	 * @return string
-	 * @throws Exception If site name cannot be found
 	 */
 	public function get_name(): string {
 
