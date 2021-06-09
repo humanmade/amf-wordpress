@@ -42,7 +42,7 @@ class Provider extends BaseProvider {
 	 */
 	public function get_id(): string {
 
-		return 'wp';
+		return 'wordpress';
 	}
 
 	/**
