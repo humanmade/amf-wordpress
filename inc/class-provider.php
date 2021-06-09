@@ -36,6 +36,26 @@ class Provider extends BaseProvider {
 	}
 
 	/**
+	 * Return the provider ID.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string {
+
+		return 'wordpress';
+	}
+
+	/**
+	 * Return the provider name.
+	 *
+	 * @return string
+	 */
+	public function get_name(): string {
+
+		return (string) apply_filters( 'amf/wordpress/provider_name', __( 'External WordPress Media', 'amf-wordpress' ) );
+	}
+
+	/**
 	 * Retrieve the items for a query.
 	 *
 	 * @param array $args Query args from the media library.
@@ -62,7 +82,7 @@ class Provider extends BaseProvider {
 		] );
 		$response = json_decode( $response );
 
-		if ( json_last_error() ) {
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new Exception( sprintf(
 				/* translators: %s: Error message */
 				__( 'Media error: %s', 'amf-wordpress' ),

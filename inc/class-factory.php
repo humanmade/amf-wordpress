@@ -166,13 +166,13 @@ class Factory {
 	public function create_image( stdClass $data ): Image {
 
 		$item = new Image( $data->id, $data->mime_type );
-		
+
 		if ( isset( $data->media_details->width ) ) {
-		   $item->set_width( $data->media_details->width );
+			$item->set_width( $data->media_details->width );
 		}
-		
+
 		if ( isset( $data->media_details->height ) ) {
-		   $item->set_width( $data->media_details->height );
+			$item->set_width( $data->media_details->height );
 		}
 
 		return $item;
