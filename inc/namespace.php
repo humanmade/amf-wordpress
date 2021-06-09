@@ -29,7 +29,7 @@ function bootstrap(): void {
  *
  * @param ProviderRegistry $provider_registry Provider registry instance.
  */
-function register_provider( ProviderRegistry $provider_registry ) {
+function register_provider( ProviderRegistry $provider_registry ): void {
 
 	$provider_registry->register( new Provider( new Factory() ) );
 }
