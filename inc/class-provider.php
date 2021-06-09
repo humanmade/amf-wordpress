@@ -53,7 +53,7 @@ class Provider extends BaseProvider {
         if ( is_using_local_site() ) {
 			$local_blog_id = get_local_site_id();
 
-			switch_to_blog( $localBlogId );
+			switch_to_blog( $local_blog_id );
 
 			$controller = new WP_REST_Attachments_Controller( 'attachment' );
 			$request = new WP_REST_Request( 'GET' , '/wp/v2/media' , $controller->get_collection_params() );
