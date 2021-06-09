@@ -26,6 +26,8 @@ function bootstrap(): void {
 
 /**
  * Register the provider with AMF.
+ *
+ * @param ProviderRegistry $provider_registry Provider registry instance.
  */
 function register_provider( ProviderRegistry $provider_registry ) {
 
