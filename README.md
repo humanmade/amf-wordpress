@@ -32,7 +32,9 @@ If this constant is defined then the setting on the Media settings screen will n
 ### Local Multisites
  By default, the Plugin will make a remote request to the provided `AMF_WORDPRESS_URL` site.
  However, if the site is actually a subsite of a multisite setup, you can instead use database queries.
- To do this, define the constant `AMF_WORDPRESS_SITE_ID` and set it to the blog id of your central library.
+To do this, define the constant `AMF_WORDPRESS_SITE_ID` and set it to the blog id of your central library.
+
+Note that this will internally use `switch_to_blog()`, and hence will not load plugins for the central library's site (and will keep the current site's plugins and themes loaded). This may cause incorrect or inconsistent filters to be applied, so handle with care and test extensively.
 
  For example:
 
