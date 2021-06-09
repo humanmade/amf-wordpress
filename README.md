@@ -37,7 +37,7 @@ If this constant is defined then the setting on the Media settings screen will n
  For example:
 
  ```
-  define('AMF_WORDPRESS_SITE_ID', 1);
+define( 'AMF_WORDPRESS_SITE_ID', 1 );
  ```
 
 ### Filters
