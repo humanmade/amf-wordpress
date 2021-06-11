@@ -172,7 +172,7 @@ class Factory {
 		}
 
 		if ( isset( $data->media_details->height ) ) {
-			$item->set_width( $data->media_details->height );
+			$item->set_height( $data->media_details->height );
 		}
 
 		return $item;
