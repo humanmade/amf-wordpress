@@ -17,7 +17,7 @@
         "php": ">=7.2",
         "ext-json": "*",
         "composer/installers": "^1.0",
-        "humanmade/asset-manager-framework": "^0.11.0"
+        "humanmade/asset-manager-framework": "^0.12.0"
     },
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
