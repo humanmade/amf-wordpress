@@ -38,6 +38,10 @@ function register_provider( ProviderRegistry $provider_registry ): void {
  * Register the settings.
  */
 function register_settings(): void {
+	if ( defined( 'AMF_WORDPRESS_URL' ) ) {
+		// Skip the UI.
+		return;
+	}
 
 	register_setting( SETTINGS_PAGE, URL_SETTING, [
 		'type'              => 'string',
@@ -50,7 +54,6 @@ function register_settings(): void {
  * Register the UI for the settings.
  */
 function register_settings_ui(): void {
-
 	if ( defined( 'AMF_WORDPRESS_URL' ) ) {
 		// Skip the UI.
 		return;
