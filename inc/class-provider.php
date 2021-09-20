@@ -8,6 +8,7 @@ declare( strict_types=1 );
 namespace AMFWordPress;
 
 use AssetManagerFramework\MediaList;
+use AssetManagerFramework\MediaResponse;
 use AssetManagerFramework\Provider as BaseProvider;
 use Exception;
 
@@ -60,11 +61,11 @@ class Provider extends BaseProvider {
 	 *
 	 * @param array $args Query args from the media library.
 	 *
-	 * @return MediaList Found items.
+	 * @return MediaResponse Found items.
 	 *
 	 * @throws Exception If the REST API response could not be decoded.
 	 */
-	protected function request( array $args ): MediaList {
+	protected function request( array $args ): MediaResponse {
 
 		$args = $this->parse_args( $args );
 
@@ -80,7 +81,7 @@ class Provider extends BaseProvider {
 			],
 			'timeout' => 30,
 		] );
-		$response = json_decode( $response );
+		$data = json_decode( $response->get_data() );
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new Exception( sprintf(
@@ -90,13 +91,24 @@ class Provider extends BaseProvider {
 			) );
 		}
 
+		$total = absint( $response->get_headers()['x-wp-total'] );
+		$per_page = absint( $args['per_page'] ?? 40 );
+
 		if ( ! is_array( $response ) || ! $response ) {
-			return new MediaList();
+			return new MediaResponse(
+				new MediaList(),
+				$total,
+				$per_page
+			);
 		}
 
-		$items = array_map( [ $this->factory, 'create' ], $response );
+		$items = array_map( [ $this->factory, 'create' ], $data );
 
-		return new MediaList( ...$items );
+		return new MediaResponse(
+			new MediaList( ...$items ),
+			$total,
+			$per_page
+		);
 	}
 
 	/**
