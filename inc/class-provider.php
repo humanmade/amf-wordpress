@@ -127,6 +127,10 @@ class Provider extends BaseProvider {
 		}
 
 		if ( isset( $args['posts_per_page'] ) ) {
+			// Check if 0 or -1 has been passed and reset to default.
+			if ( intval( $args['posts_per_page'] ) <= 0 ) {
+				$args['posts_per_page'] = 40;
+			}
 			$query['per_page'] = absint( $args['posts_per_page'] );
 		}
 
