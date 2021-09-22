@@ -91,17 +91,18 @@ class Provider extends BaseProvider {
 			) );
 		}
 
-		$total = absint( $response->get_headers()['x-wp-total'] );
+		// Fall back to 40 as this is the default value for media library requests.
 		$per_page = absint( $args['per_page'] ?? 40 );
 
 		if ( ! is_array( $response ) || ! $response ) {
 			return new MediaResponse(
 				new MediaList(),
-				$total,
+				0,
 				$per_page
 			);
 		}
 
+		$total = absint( $response->get_headers()['x-wp-total'] ?? 0 );
 		$items = array_map( [ $this->factory, 'create' ], $data );
 
 		return new MediaResponse(
