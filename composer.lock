@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ad0041fd0339e5b54c39511fc6ac399",
+    "content-hash": "9b6f58474e1d26164b4691bbcc7bb008",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.11.0",
+            "version": "v1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "ae03311f45dfe194412081526be2e003960df74b"
+                "reference": "d20a64ed3c94748397ff5973488761b22f6d3f19"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/ae03311f45dfe194412081526be2e003960df74b",
-                "reference": "ae03311f45dfe194412081526be2e003960df74b",
+                "url": "https://api.github.com/repos/composer/installers/zipball/d20a64ed3c94748397ff5973488761b22f6d3f19",
+                "reference": "d20a64ed3c94748397ff5973488761b22f6d3f19",
                 "shasum": ""
             },
             "require": {
@@ -116,6 +116,7 @@
                 "modx",
                 "moodle",
                 "osclass",
+                "pantheon",
                 "phpbb",
                 "piwik",
                 "ppi",
@@ -138,7 +139,7 @@
             ],
             "support": {
                 "issues": "https://github.com/composer/installers/issues",
-                "source": "https://github.com/composer/installers/tree/v1.11.0"
+                "source": "https://github.com/composer/installers/tree/v1.12.0"
             },
             "funding": [
                 {
@@ -154,20 +155,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-04-28T06:42:17+00:00"
+            "time": "2021-09-13T08:19:44+00:00"
         },
         {
             "name": "humanmade/asset-manager-framework",
-            "version": "0.12.0",
+            "version": "0.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/humanmade/asset-manager-framework.git",
-                "reference": "b4de7f6a049103a4b0396c635c4c3f83b49a57d7"
+                "reference": "8c47862610390fa9d8e45099f4a70ae8d3ed1882"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/humanmade/asset-manager-framework/zipball/b4de7f6a049103a4b0396c635c4c3f83b49a57d7",
-                "reference": "b4de7f6a049103a4b0396c635c4c3f83b49a57d7",
+                "url": "https://api.github.com/repos/humanmade/asset-manager-framework/zipball/8c47862610390fa9d8e45099f4a70ae8d3ed1882",
+                "reference": "8c47862610390fa9d8e45099f4a70ae8d3ed1882",
                 "shasum": ""
             },
             "require": {
@@ -200,9 +201,9 @@
             "homepage": "https://github.com/humanmade/asset-manager-framework/",
             "support": {
                 "issues": "https://github.com/humanmade/asset-manager-framework/issues",
-                "source": "https://github.com/humanmade/asset-manager-framework/tree/0.12.0"
+                "source": "https://github.com/humanmade/asset-manager-framework/tree/0.13.0"
             },
-            "time": "2021-06-17T11:30:19+00:00"
+            "time": "2021-09-27T14:21:58+00:00"
         }
     ],
     "packages-dev": [
@@ -535,16 +536,16 @@
         },
         {
             "name": "phpcompatibility/phpcompatibility-wp",
-            "version": "2.1.1",
+            "version": "2.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCompatibility/PHPCompatibilityWP.git",
-                "reference": "b7dc0cd7a8f767ccac5e7637550ea1c50a67b09e"
+                "reference": "a792ab623069f0ce971b2417edef8d9632e32f75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibilityWP/zipball/b7dc0cd7a8f767ccac5e7637550ea1c50a67b09e",
-                "reference": "b7dc0cd7a8f767ccac5e7637550ea1c50a67b09e",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibilityWP/zipball/a792ab623069f0ce971b2417edef8d9632e32f75",
+                "reference": "a792ab623069f0ce971b2417edef8d9632e32f75",
                 "shasum": ""
             },
             "require": {
@@ -585,7 +586,7 @@
                 "issues": "https://github.com/PHPCompatibility/PHPCompatibilityWP/issues",
                 "source": "https://github.com/PHPCompatibility/PHPCompatibilityWP"
             },
-            "time": "2021-02-15T12:58:46+00:00"
+            "time": "2021-07-21T11:09:57+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
