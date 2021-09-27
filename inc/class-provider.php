@@ -81,6 +81,7 @@ class Provider extends BaseProvider {
 			],
 			'timeout' => 30,
 		] );
+
 		$data = json_decode( $response->get_data() );
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
@@ -94,7 +95,7 @@ class Provider extends BaseProvider {
 		// Fall back to 40 as this is the default value for media library requests.
 		$per_page = absint( $args['per_page'] ?? 40 );
 
-		if ( ! is_array( $response ) || ! $response ) {
+		if ( ! is_array( $data ) || ! $data ) {
 			return new MediaResponse(
 				new MediaList(),
 				0,
