@@ -12,6 +12,7 @@ use AssetManagerFramework\ProviderRegistry;
 const SETTINGS_PAGE = 'media';
 const SETTINGS_SECTION = 'amf_wordpress';
 const URL_SETTING = 'amf_wordpress_url';
+const TOKEN_SETTING = 'amf_wordpress_token';
 
 /**
  * Bootstrap function.
@@ -48,6 +49,12 @@ function register_settings(): void {
 		'description'       => __( 'URL of the WordPress site to use as media source.', 'amf-wordpress' ),
 		'sanitize_callback' => __NAMESPACE__ . '\\sanitize_wordpress_url',
 	] );
+
+	register_setting( SETTINGS_PAGE, TOKEN_SETTING, [
+		'type'              => 'string',
+		'description'       => __( 'Application password for the WordPress site to use as media source. .', 'amf-wordpress' ),
+		'sanitize_callback' => 'sanitize_text_field',
+	] );
 }
 
 /**
@@ -73,7 +80,20 @@ function register_settings_ui(): void {
 		SETTINGS_PAGE,
 		SETTINGS_SECTION,
 		[
+			'description' => __( 'URL of the WordPress site to use as media source.', 'amf-wordpress' ),
 			'label_for' => URL_SETTING,
+		]
+	);
+
+	add_settings_field(
+		TOKEN_SETTING,
+		__( 'Application Password', 'amf-wordpress' ),
+		__NAMESPACE__ . '\\render_field_ui',
+		SETTINGS_PAGE,
+		SETTINGS_SECTION,
+		[
+			'description' => __( 'Application password for the WordPress site to use as media source. .', 'amf-wordpress' ),
+			'label_for' => TOKEN_SETTING,
 		]
 	);
 }
@@ -92,21 +112,24 @@ function render_settings_description(): void {
 
 /**
  * Render the settings field UI.
+ *
+ * @param array $args Field callback args.
  */
-function render_field_ui(): void {
+function render_field_ui( array $args ): void {
 
-	$value = get_option( URL_SETTING, '' );
+	$name = $args['label_for'];
+	$value = get_option( $name, '' );
 
 	?>
 	<input
 		class="regular-text code"
-		id="<?php echo esc_attr( URL_SETTING ); ?>"
-		name="<?php echo esc_attr( URL_SETTING ); ?>"
+		id="<?php echo esc_attr( $name ); ?>"
+		name="<?php echo esc_attr( $name ); ?>"
 		type="url"
 		value="<?php echo esc_attr( $value ); ?>"
 	/>
 	<p class="description">
-		<?php _e( 'URL of the WordPress site to use as media source.', 'amf-wordpress' ); ?>
+		<?php echo esc_html( $args['description'] ); ?>
 	</p>
 	<?php
 }
@@ -143,4 +166,23 @@ function get_endpoint(): string {
 	$endpoint = "{$url}/wp-json/wp/v2/media";
 
 	return $endpoint;
+}
+
+/**
+ * Get the authentication token.
+ *
+ * @return string|null
+ */
+function get_auth_token() : ?string {
+
+	$token = defined( 'AMF_WORDPRESS_TOKEN' ) ? AMF_WORDPRESS_TOKEN : get_option( TOKEN_SETTING, null );
+
+	/**
+	 * Filters the REST API authentication token.
+	 *
+	 * @param string $token The authentication token for the REST API authorization header.
+	 */
+	$token = apply_filters( 'amf_wordpress_token', $token );
+
+	return ! empty( $token ) ? base64_encode( $token ) : null;
 }
