@@ -7,6 +7,8 @@ declare( strict_types=1 );
 
 namespace AMFWordPress;
 
+use AssetManagerFramework\FileUpload;
+use AssetManagerFramework\Media;
 use AssetManagerFramework\MediaList;
 use AssetManagerFramework\MediaResponse;
 use AssetManagerFramework\Provider as BaseProvider;
@@ -170,5 +172,74 @@ class Provider extends BaseProvider {
 		$query['_embed'] = 1;
 
 		return $query;
+	}
+
+	/**
+	 * Allow asset creation.
+	 *
+	 * @return boolean
+	 */
+	public function supports_asset_create() : bool {
+		return true;
+	}
+
+	/**
+	 * Allow updating assets.
+	 *
+	 * @return boolean
+	 */
+	public function supports_asset_update() : bool {
+		return false;
+	}
+
+	/**
+	 * Allow deleting assets.
+	 *
+	 * @return boolean
+	 */
+	public function supports_asset_delete() : bool {
+		return false;
+	}
+
+	/**
+	 * Handle uploading the file via the REST API.
+	 *
+	 * @param FileUpload $file The uploaded file object.
+	 * @return Media
+	 * @throws Exception If there was an error uploading.
+	 */
+	public function upload( FileUpload $file ) : Media {
+
+		$url = get_endpoint();
+
+		/**
+		 * Filters the args used to POST an upload to the WP REST API.
+		 *
+		 * @param array $args The remote request args.
+		 * @param FileUpload $file The current AMF file upload object.
+		 */
+		$args = apply_filters( 'amf_wordpress_upload_args', [
+			'method' => 'POST',
+			'headers' => [
+				'content-disposition' => sprintf( 'attachment; filename="%s"', $file->name ),
+				'content-type' => $file->type,
+				'authorization' => sprintf( 'Basic %s', get_auth_token() ),
+			],
+			'body' => file_get_contents( $file->tmp_name ),
+			'timeout' => 3600,
+		], $file );
+
+		$response = $this->remote_request( $url, $args );
+		$response = json_decode( $response );
+
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new Exception( sprintf(
+				/* translators: %s: Error message */
+				__( 'Media error: %s', 'amf-wordpress' ),
+				json_last_error_msg()
+			) );
+		}
+
+		return $this->factory->create( $response );
 	}
 }
